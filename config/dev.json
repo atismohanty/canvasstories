@@ -1,0 +1,8 @@
+{
+    "mongo" : {
+        "mongooseHost" : "127.0.0.1",
+        "mongoosePort" : 27017
+    },
+    "protocol": "mongodb",
+    "secret_key": "XPM00YHSKEKKE899UYAPL203SYCUAKALSLPPS"
+}
