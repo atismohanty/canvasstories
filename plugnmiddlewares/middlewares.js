@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const path = require('path');
 const bodyParser = require("body-parser");
+const passport = require('passport');
 const passport =  require("../services/passport-config");
 const config =  require("config");
 

@@ -25,6 +25,34 @@ passport.use('localStrategy', new LocalStrategy(
     }
 ));
 
+
+passport.use('facebook', new strategyFB({
+    clientID: config.get('facebookApp')['appId'],
+    clientSecret: config.get('facebookApp')['appSecret'],
+    callbackURL: 'http://localhost:3001/api/v1/redirects/fbredirect'
+    },
+    async function (accessToken, refreshToken, profile, cb) {
+        if ( profile) {
+            console.log('User profile received from FB', profile);
+            const newUserData = {
+                userId: profile.id + '',
+                profileName: profile.username + '',
+                emailAddress: 'xyz@example.com',
+                provider: profile.provider + ''
+            };
+            console.log('New User Data', {...newUserData});
+            try {
+                await userSvc.createFederateUser(newUserData);
+            } catch(err) {
+                return cb(err);
+            }
+            console.log('User authenticated');
+            return cb(null, newUserData);
+        }
+        return cb(null, false);
+    }
+));
+
 passport.serializeUser(function(user, done) {
     done(null, user._id);
 });

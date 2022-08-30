@@ -10,6 +10,11 @@ const initMongoUserModel = function (){
     return user;
 }
 
+const initFederatedUserModel =  function() {
+    let fdUser = mongoose.model('fdusers', userSchema.federatedUserSchema );
+    return fdUser;
+}
+
 const findOneUser = async function(findOption) {
     try {
         const user = await Users.findOne(findOption);
@@ -102,4 +107,32 @@ const formatSort =  function(sort, defSort) {
     return obj;
     
 }
-module.exports = {createUser, getAllUser, validatePwd, initMongoUserModel}
+
+const createFederateUser = async function(data) {
+    try {
+        console.log('Creating federated user');
+        const  valid = await userSchema.validateFederatedSchema(data);
+        if (valid) {
+            const fdUser =  initFederatedUserModel();
+            console.log('Initiated the model');
+            const response = await fdUser.findOne({userId: data.id});
+            if (! response) {
+                const newFdUser = new fdUser(data);
+                newFdUser.save();
+                console.log('Created federated user');
+                Promise.resolve(data);
+            } else {
+                return Promise.resolve(response);
+            }
+            
+        } else {
+            throw new Error({err: 'Invalid data'})
+        }
+
+    } catch(err) {
+        console.log('Error', err);
+        return Promise.reject({error: err});
+    }
+}
+
+module.exports = {createUser, getAllUser, validatePwd, initMongoUserModel, createFederateUser}
